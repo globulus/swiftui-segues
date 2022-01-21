@@ -6,7 +6,7 @@ Easy-to-use segues in SwiftUI, allowing for presenting views using common UIKIt 
 
 Navigating between views/screens in SwiftUI is more difficult and convoluted than it is in UIKit, with different segues dispersed over multiple views (e.g, `NavigationLink`) and modifiers (`popover`, `fullScreenCover`). Moreover, part of this functionality isn't available on iOS 13.
 
-This package contains two View Modifiers that allow for seamless integration of segues into your SwiftUI code, and it's **fully compatible with iOS 13 and above**. The segues are **triggered by setting binding values**, and can be dismissed by **setting the value to nil**. Yep, it's eas easy as this:
+This package contains two View Modifiers that allow for seamless integration of segues into your SwiftUI code, and it's **fully compatible with iOS 13 and above**. The segues are **triggered by setting binding values**, and can be dismissed by **setting the value to nil**. Yep, it's as easy as this:
 
 ```swift
 .segue(.push, tag: .pushTest, selection: $route) {
