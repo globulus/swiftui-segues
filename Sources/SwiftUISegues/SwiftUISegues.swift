@@ -3,7 +3,8 @@ import SwiftUI
 public enum SegueType {
     case push,
          modal,
-         popover(PopoverAttachmentAnchor, Edge)
+         popover(PopoverAttachmentAnchor, Edge),
+         `switch`(AnyTransition?, Animation?)
 }
 
 public struct Segue<Destination, Selection>: ViewModifier
@@ -31,6 +32,8 @@ where Destination : View, Selection : Hashable {
             modalSegue(content)
         case let .popover(anchor, arrowEdge):
             popoverSegue(content, anchor: anchor, arrowEdge: arrowEdge)
+        case let .switch(transition, animation):
+          switchSegue(content, transition: transition, animation: animation)
         }
     }
     
@@ -42,6 +45,7 @@ where Destination : View, Selection : Hashable {
                            destination: destination) {
                 EmptyView()
             }
+            .isDetailLink(false)
         }
     }
     
@@ -79,6 +83,21 @@ where Destination : View, Selection : Hashable {
                      arrowEdge: arrowEdge,
                      content: destination)
     }
+  
+  @ViewBuilder private func switchSegue(_ content: Content,
+                                        transition: AnyTransition?,
+                                        animation: Animation?) -> some View {
+    ZStack {
+      if selection == tag {
+        destination()
+          .transition(transition ?? .slide)
+      } else {
+        content
+          .transition(transition ?? .slide)
+      }
+    }
+    .animation(animation)
+  }
 }
 
 public extension View {
@@ -116,6 +135,8 @@ where Destination : View, Selection : Identifiable, Selection : CaseIterable, Se
             modalSegue(content)
         case let .popover(anchor, arrowEdge):
             popoverSegue(content, anchor: anchor, arrowEdge: arrowEdge)
+        case let .switch(transition, animation):
+          switchSegue(content, transition: transition, animation: animation)
         }
     }
     
@@ -128,6 +149,7 @@ where Destination : View, Selection : Identifiable, Selection : CaseIterable, Se
                                destination: { destination(tag) }) {
                     EmptyView()
                 }
+                .isDetailLink(false)
             }
         }
     }
@@ -154,6 +176,21 @@ where Destination : View, Selection : Identifiable, Selection : CaseIterable, Se
                      arrowEdge: arrowEdge,
                      content: destination)
     }
+  
+  @ViewBuilder private func switchSegue(_ content: Content,
+                                        transition: AnyTransition?,
+                                        animation: Animation?) -> some View {
+    ZStack {
+      if let tag = selection {
+        destination(tag)
+          .transition(transition ?? .slide)
+      } else {
+        content
+          .transition(transition ?? .slide)
+      }
+    }
+    .animation(animation)
+  }
 }
 
 public extension View {
@@ -374,6 +411,54 @@ struct PopoverSegueTest: View {
 struct PopoverSegueTest_Preview: PreviewProvider {
     static var previews: some View {
         PopoverSegueTest()
+    }
+}
+
+struct SwitchSegueTest: View {
+    @State private var route: Route? = nil
+    
+    var body: some View {
+        VStack {
+            Button("Go to A") {
+              route = .a
+            }
+            Button("Go to B") {
+                route = .b
+            }
+            Button("Go to C") {
+                route = .c
+            }
+        }
+        .segues(.switch(.move(edge: .bottom), .easeInOut), selection: $route) { route in
+            switch route {
+            case .a:
+                Button("A") {
+                    self.route = nil
+                }
+            case .b:
+                Button("B") {
+                    self.route = nil
+                }
+            case .c:
+                Button("C") {
+                    self.route = nil
+                }
+            }
+        }
+    }
+    
+    enum Route: Identifiable, CaseIterable, Hashable {
+        case a, b, c
+        
+        var id: String {
+            "\(self)"
+        }
+    }
+}
+
+struct SwitchSegueTest_Preview: PreviewProvider {
+    static var previews: some View {
+        SwitchSegueTest()
     }
 }
 

@@ -1,5 +1,9 @@
 # SwiftUI Segues
 
+<p align="center">
+  ![Logo](https://github.com/globulus/swiftui-segues/blob/main/Images/logo.png?raw=true)
+</p>
+
 Easy-to-use segues in SwiftUI, allowing for presenting views using common UIKIt Segue types - **push**, **modal** and **popover**.
 
 ![Preview](https://github.com/globulus/swiftui-segues/blob/main/Images/preview_large.gif?raw=true)
@@ -26,6 +30,11 @@ https://github.com/globulus/swiftui-segues
 
  * A good SwiftUI navigation practice is to define all routes, i.e transitions from the current view to subsequent ones, in an enum. Then, add a `@State` var to your view (or `@Published` var in your VM) whose value is an optional enum route. This is consistent with the *tag/selection* and *item*  variants of `NavigationLink` / `Popover` / `FullScreenCover`.
  * Assign a value to the route binding to trigger a segue, and assign it to `nil` to dismiss it.
+ * Available segue types:
+   + `push` - a standard push/pop transition that requires a `NavigationView` somewhere in the view hierarchy. 
+   + `modal` - presents a full-screen cover can't readily be dismissed by the user.
+   + `popover` - presents a part-screen cover that can be dismissed by the user by pulling down from the top. You can specify the `PopoverAttachmentAnchor` and `Edge` of the popover.
+   + `switch` - conditionally replaces one view with the other, allowing you to specify the `AnyTransition` and `Animation` that take place when the switching happens. This is essentially the *custom* segue type.
 
 ### Mixed segues
 
@@ -167,5 +176,6 @@ Check out [this recipe](https://swiftuirecipes.com/blog/swiftui-segues) for in-d
 
 ## Changelog
 
+* 1.0.1 - Set `isDetailLink` for push segues to allow for unpacking nested views by setting the binding to `nil`.
 * 1.0.0 - Initial release.
 
