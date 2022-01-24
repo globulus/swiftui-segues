@@ -1,7 +1,7 @@
 # SwiftUI Segues
 
 <p align="center">
-  ![Logo](https://github.com/globulus/swiftui-segues/blob/main/Images/logo.png?raw=true)
+  <img width="136" height="146" alt="Logo" src="https://github.com/globulus/swiftui-segues/blob/main/Images/logo.png?raw=true">
 </p>
 
 Easy-to-use segues in SwiftUI, allowing for presenting views using common UIKIt Segue types - **push**, **modal** and **popover**.
