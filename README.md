@@ -26,6 +26,12 @@ This component is distributed as a **Swift package**. Just add this repo's URL t
 https://github.com/globulus/swiftui-segues
 ```
 
+You can also use **CocoaPods**:
+
+```ruby
+pod 'SwiftUISegues', '~> 1.0.1'
+```
+
 ## How to use
 
  * A good SwiftUI navigation practice is to define all routes, i.e transitions from the current view to subsequent ones, in an enum. Then, add a `@State` var to your view (or `@Published` var in your VM) whose value is an optional enum route. This is consistent with the *tag/selection* and *item*  variants of `NavigationLink` / `Popover` / `FullScreenCover`.
