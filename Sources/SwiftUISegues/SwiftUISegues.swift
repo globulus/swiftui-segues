@@ -40,12 +40,19 @@ where Destination : View, Selection : Hashable {
     @ViewBuilder private func pushSegue(_ content: Content) -> some View {
         ZStack {
             content
-            NavigationLink(tag: tag,
-                           selection: $selection,
-                           destination: destination) {
-                EmptyView()
+            // By default, NavigationLink destinations should be lazily loaded, but that
+            // apparently isn't always the case. This check prevents destinations from
+            // being loaded ahead of time.
+            if selection == tag {
+              NavigationLink(tag: tag,
+                             selection: $selection,
+                             destination: destination) {
+                  EmptyView()
+              }
+              .isDetailLink(false)
+            } else {
+              EmptyView();
             }
-            .isDetailLink(false)
         }
     }
     

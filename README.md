@@ -29,7 +29,7 @@ https://github.com/globulus/swiftui-segues
 You can also use **CocoaPods**:
 
 ```ruby
-pod 'SwiftUISegues', '~> 1.0.1'
+pod 'SwiftUISegues', '~> 1.0.2'
 ```
 
 ## How to use
@@ -182,6 +182,7 @@ Check out [this recipe](https://swiftuirecipes.com/blog/swiftui-segues) for in-d
 
 ## Changelog
 
+* 1.0.2 - Added checks to make sure push segue destinations are lazily loaded (SwiftUI bug workaround).
 * 1.0.1 - Set `isDetailLink` for push segues to allow for unpacking nested views by setting the binding to `nil`.
 * 1.0.0 - Initial release.
 

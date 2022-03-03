@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SwiftUISegues'
-  s.version          = '1.0.1'
+  s.version          = '1.0.2'
   s.summary          = 'Easy-to-use segues in SwiftUI, allowing for presenting views using common UIKIt Segue types - push, modal and popover.'
   s.homepage         = 'https://github.com/globulus/swiftui-segues'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
