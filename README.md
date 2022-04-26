@@ -18,6 +18,14 @@ This package contains two View Modifiers that allow for seamless integration of 
 }
 ```
 
+or
+
+```swift
+.segue(.push, selection: $value) { value in
+    Text("Welcome to \(value)")
+}
+```
+
 ## Installation
 
 This component is distributed as a **Swift package**. Just add this repo's URL to XCode:
@@ -29,7 +37,7 @@ https://github.com/globulus/swiftui-segues
 You can also use **CocoaPods**:
 
 ```ruby
-pod 'SwiftUISegues', '~> 1.0.2'
+pod 'SwiftUISegues', '~> 1.1.0'
 ```
 
 ## How to use
@@ -41,6 +49,7 @@ pod 'SwiftUISegues', '~> 1.0.2'
    + `modal` - presents a full-screen cover can't readily be dismissed by the user.
    + `popover` - presents a part-screen cover that can be dismissed by the user by pulling down from the top. You can specify the `PopoverAttachmentAnchor` and `Edge` of the popover.
    + `switch` - conditionally replaces one view with the other, allowing you to specify the `AnyTransition` and `Animation` that take place when the switching happens. This is essentially the *custom* segue type.
+ * You can also use *value segues* - whenever the selection binding's value is not `nil`, the segue will trigger and provide the unwrapped value to the destination block.
 
 ### Mixed segues
 
@@ -182,6 +191,7 @@ Check out [this recipe](https://swiftuirecipes.com/blog/swiftui-segues) for in-d
 
 ## Changelog
 
+* 1.1.0 - Added value segues.
 * 1.0.2 - Added checks to make sure push segue destinations are lazily loaded (SwiftUI bug workaround).
 * 1.0.1 - Set `isDetailLink` for push segues to allow for unpacking nested views by setting the binding to `nil`.
 * 1.0.0 - Initial release.

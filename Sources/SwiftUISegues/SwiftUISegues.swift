@@ -120,6 +120,124 @@ public extension View {
     }
 }
 
+public struct ValueSegue<Destination, Selection>: ViewModifier
+where Destination : View {
+    let type: SegueType
+    @Binding var selection: Selection?
+    @ViewBuilder let destination: (Selection) -> Destination
+    
+    public init(type: SegueType,
+                selection: Binding<Selection?>,
+                @ViewBuilder destination: @escaping (Selection) -> Destination) {
+        self.type = type
+        _selection = selection
+        self.destination = destination
+    }
+    
+    public func body(content: Content) -> some View {
+        switch type {
+        case .push:
+            pushSegue(content)
+        case .modal:
+            modalSegue(content)
+        case let .popover(anchor, arrowEdge):
+            popoverSegue(content, anchor: anchor, arrowEdge: arrowEdge)
+        case let .switch(transition, animation):
+          switchSegue(content, transition: transition, animation: animation)
+        }
+    }
+    
+    @ViewBuilder private func pushSegue(_ content: Content) -> some View {
+        ZStack {
+            content
+            // By default, NavigationLink destinations should be lazily loaded, but that
+            // apparently isn't always the case. This check prevents destinations from
+            // being loaded ahead of time.
+            NavigationLink(isActive: Binding(get: {
+                selection != nil
+            }, set: { _ in
+                selection = nil
+            }), destination: {
+              if let selection = selection {
+                destination(selection)
+              }
+            }) {
+              EmptyView()
+            }
+            .isDetailLink(false)
+        }
+    }
+    
+    @ViewBuilder private func modalSegue(_ content: Content) -> some View {
+        if #available(iOS 14.0, *) {
+            content
+                .fullScreenCover(isPresented: Binding(get: {
+                    selection != nil
+                }, set: { _ in
+                    selection = nil
+                }), onDismiss: nil) {
+                  if let selection = selection {
+                    destination(selection)
+                  }
+                }
+        } else {
+            content
+                .fullScreenCoverBoolCompat(isPresented: Binding(get: {
+                    selection != nil
+                }, set: { _ in
+                    selection = nil
+                })) {
+                  if let selection = selection {
+                    destination(selection)
+                  }
+                }
+        }
+    }
+    
+    @ViewBuilder private func popoverSegue(_ content: Content,
+                                           anchor: PopoverAttachmentAnchor,
+                                           arrowEdge: Edge) -> some View {
+        content
+            .popover(isPresented: Binding(get: {
+                selection != nil
+            }, set: { _ in
+                selection = nil
+            }),
+                     attachmentAnchor: anchor,
+                     arrowEdge: arrowEdge) {
+              if let selection = selection {
+                destination(selection)
+              }
+            }
+    }
+  
+  @ViewBuilder private func switchSegue(_ content: Content,
+                                        transition: AnyTransition?,
+                                        animation: Animation?) -> some View {
+    ZStack {
+      if let selection = selection {
+        destination(selection)
+          .transition(transition ?? .slide)
+      } else {
+        content
+          .transition(transition ?? .slide)
+      }
+    }
+    .animation(animation)
+  }
+}
+
+public extension View {
+  func segue<Destination, Selection>(_ type: SegueType,
+                                     selection: Binding<Selection?>,
+                                     @ViewBuilder destination: @escaping (Selection) -> Destination) -> some View
+  where Destination : View {
+      self.modifier(ValueSegue(type: type,
+                               selection: selection,
+                               destination: destination))
+  }
+}
+
 public struct Segues<Destination, Selection>: ViewModifier
 where Destination : View, Selection : Identifiable, Selection : CaseIterable, Selection : Hashable {
     let type: SegueType
@@ -249,7 +367,7 @@ extension View {
 
 struct FullScreenCoverBoolCompat<CoverContent: View>: ViewModifier {
   @Binding var isPresented: Bool
-  let content: () -> CoverContent
+  @ViewBuilder let content: () -> CoverContent
 
   func body(content: Content) -> some View {
     GeometryReader { geo in
@@ -275,7 +393,7 @@ struct FullScreenCoverBoolCompat<CoverContent: View>: ViewModifier {
 
 extension View {
   func fullScreenCoverBoolCompat<Content: View>(isPresented: Binding<Bool>,
-                                            content: @escaping () -> Content) -> some View {
+                                                @ViewBuilder content: @escaping () -> Content) -> some View {
     self.modifier(FullScreenCoverBoolCompat(isPresented: isPresented,
                                             content: content))
   }
@@ -322,6 +440,35 @@ struct PushSegueTest: View {
 struct PushSegueTest_Preview: PreviewProvider {
     static var previews: some View {
         PushSegueTest()
+    }
+}
+
+struct PushValueSegueTest: View {
+  @State private var selection: String?
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                Button("Go to A") {
+                    selection = "A"
+                }
+                Button("Go to B") {
+                  selection = "C"
+                }
+                Button("Go to C") {
+                  selection = "C"
+                }
+            }
+            .segue(.push, selection: $selection) { selection in
+                Text("You selected \(selection)")
+            }
+        }
+    }
+}
+
+struct PushValueSegueTest_Preview: PreviewProvider {
+    static var previews: some View {
+        PushValueSegueTest()
     }
 }
 
